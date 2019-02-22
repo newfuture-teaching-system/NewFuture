@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.StudentMapper">
+	<resultMap type="com.entity.Student" id="studentMap">
+		<id property="studentId" column="student_id" />
+		<result property="studentName" column="student_name" />
+		<result property="studentSex" column="student_sex" />
+		<result property="studentAge" column="student_age" />
+		<association property="user" javaType="com.entity.User">
+			<id property="userId" column="user_id" />
+			<result property="username" column="username" />
+			<result property="password" column="password" />
+			<result property="flag" column="flag" />
+		</association>
+		<association property="stuCourse"
+			javaType="com.entity.StuCourse">
+			<id property="studentId" column="student_id" />
+			<id property="courseId" column="course_id" />
+			<result property="signUpTime" column="sign_up_time" />
+			<result property="startTime" column="start_time" />
+			<result property="teacherName" column="teacher_name" />
+			<result property="courseProgress" column="course_progress" />
+		</association>
+	</resultMap>
+	<select id="changeStudent" parameterType="String"
+		resultType="com.entity.Student" resultMap="studentMap">
+		select
+		*
+		from
+		y_student
+		where
+		student_id=#{userId}
+
+	</select>
+	<update id="updateStudent" parameterType="com.entity.Student">
+		update
+		y_student
+		set
+		student_name=#{studentName},student_sex=#{studentSex},student_age=#{studentAge}
+		where
+		student_id=#{studentId}
+	</update>
+	<!--添加学生 -->
+	<insert id="addStudent" parameterType="com.entity.User">
+		insert
+		into
+		y_student
+		(student_id,student_name)
+		values(#{userId},#{userId})
+
+	</insert>
+<!-- 	查询课程学生 -->
+<select id="selectCourseStudent" resultMap="studentMap">
+SELECT 
+    *
+FROM
+    y_student s,
+    y_stucourse sc
+WHERE
+    s.student_id = sc.student_id
+        AND sc.course_id = #{courseId}
+</select>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.WorkOneTwoMapper">
+<resultMap type="com.entity.WorkOneTwo" id="workOneTwoMap">
+		<id property="workId" column="work_id" />
+		<id property="courseId" column="course_id" />
+		<id property="catalogOneId" column="catalog_one_id" />
+		<id property="catalogTwoId" column="catalog_two_id" />
+		<result property="work" column="work" />
+</resultMap>
+<!-- 课程界面查询所留作业题目 -->
+	<select id="selectWorkQ" resultMap="workOneTwoMap">
+	SELECT
+	*
+	FROM
+	y_work_onetwo as wot
+	WHERE
+	wot.course_id = #{0}
+	AND wot.catalog_one_id=#{1}
+	AND wot.catalog_two_id=#{2}
+	</select>
+
+</mapper>

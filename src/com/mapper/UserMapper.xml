@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserMapper">
+	<resultMap type="com.entity.User" id="userMap">
+		<id property="userId" column="user_id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="flag" column="flag" />
+
+		<association property="course"
+			javaType="com.entity.Course">
+			<id property="courseId" column="course_id" />
+			<result property="courseName" column="course_name" />
+			<result property="courseIntroduction"
+				column="course_introduction" />
+		</association>
+		<association property="stuCourse"
+			javaType="com.entity.StuCourse">
+			<id property="studentId" column="student_id" />
+			<id property="courseId" column="course_id" />
+			<result property="signUpTime" column="sign_up_time" />
+			<result property="startTime" column="start_time" />
+			<result property="teacherName" column="teacher_name" />
+			<result property="courseProgress" column="course_progress" />
+		</association>
+		<association property="student"
+			javaType="com.entity.Student">
+			<id property="studentId" column="student_id" />
+			<result property="studentName" column="student_name" />
+			<result property="studentSex" column="student_sex" />
+			<result property="studentAge" column="student_age" />
+		</association>
+		<association property="work" javaType="com.entity.Work">
+			<id property="workId" column="work_id" />
+			<id property="studentId" column="student_id" />
+			<result property="workContent" column="work_content" />
+			<result property="workSubmitTime" column="work_submit_time" />
+			<result property="workCheckTime" column="work_check_time" />
+			<result property="workState" column="work_state" />
+			<result property="workCheckContent" column="work_check_content" />
+		</association>
+		<association property="question"
+			javaType="com.entity.Question">
+			<id property="studentId" column="student_id" />
+			<id property="teacherId" column="teacher_id" />
+			<id property="courseId" column="course_id" />
+			<id property="questionId" column="question_id" />	
+			<result property="question" column="question" />
+			<result property="questionTime" column="question_time" />
+			<result property="answer" column="answer" />
+			<result property="answerTime" column="answer_time" />
+			<result property="questionTitle" column="question_title" />
+			<result property="questionState" column="question_state" />
+		</association>
+	</resultMap>
+
+
+
+	<!--登录验证 -->
+	<select id="selectUser" parameterType="com.entity.User"
+		resultMap="userMap">
+		select
+		*
+		from
+		y_user
+		where
+		user_id=#{userId} and
+		password=#{password}
+
+	</select>
+	<select id="getStuCourseInfo" parameterType="String"
+		resultMap="userMap">
+		select
+		c.course_name,c.course_id,t.teacher_name,w.work_submit_time,w.work_state,w.work_content,w.work_id
+		from
+		y_work as w,y_work_onetwo as wot,y_course as c,y_teacourse as tc,y_teacher t
+		where
+		w.work_id=wot.work_id
+        and wot.course_id = c.course_id
+        and tc.course_id=c.course_id
+        and t.teacher_id=tc.teacher_id
+        and w.student_id =#{userId}
+	</select>
+	<select id="getQuestionInfo" parameterType="String"
+		resultMap="userMap">
+		select c.course_name,q.question_title,t.teacher_name,q.question_state,q.question_time,q.answer_time,q.question_id from y_question q,y_teacher t,y_course c ,y_student s where q.student_id = s.student_id and q.teacher_id = t.teacher_id and q.course_id = c.course_id and q.student_id = #{userId}
+	</select>
+
+	<!--通过id查询用户 -->
+	<select id="selectUserById" parameterType="com.entity.User"
+		resultMap="userMap">
+		SELECT
+		*
+		FROM
+		y_user
+		WHERE
+		user_id=#{userId}
+	</select>
+
+	<!--添加用户 -->
+	<insert id="addStudent" parameterType="com.entity.User">
+		insert
+		into
+		y_user
+		values(#{userId},#{userId},#{password},2)
+
+	</insert>
+	<!-- 	修改用户信息 -->
+
+	<update id="changeUserInfo" parameterType="com.entity.User">
+			update y_user set username=#{username}, password=#{password} where user_id=#{userId}
+	</update>
+<!-- 	添加学生课程 -->
+<insert id="addStuCourse">
+insert
+into
+y_stucourse
+(student_id,course_id,start_time,teacher_name)
+values(#{0},#{1},#{2},#{3})
+</insert>
+<!--添加教师用户  -->
+	<insert id="addTeacher" parameterType="com.entity.User">
+		insert
+		into
+		y_user
+		values(#{userId},#{username},'000000',1)
+		</insert>
+	
+
+</mapper>

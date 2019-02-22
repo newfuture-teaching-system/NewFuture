@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.CourseMapper">
+	<resultMap type="com.entity.Course" id="courseMap">
+		<id property="courseId" column="course_id" />
+		<result property="courseName" column="course_name" />
+		<result property="courseIntroduction"
+			column="course_introduction" />
+		<result property="flag" column="flag" />
+		<association property="stuCourse"
+			javaType="com.entity.StuCourse">
+			<id property="studentId" column="student_id" />
+			<id property="courseId" column="course_id" />
+			<result property="signUpTime" column="sign_up_time" />
+			<result property="startTime" column="start_time" />
+			<result property="teacherName" column="teacher_name" />
+			<result property="courseProgress" column="course_progress" />
+		</association>
+		<collection property="catalogOneList"
+			ofType="com.entity.CatalogOne">
+			<id property="num" column="num" />
+			<id property="courseId" column="course_id" />
+			<id property="catalogOneId" column="catalog_one_id" />
+			<result property="catalogOneName" column="catalog_one_name" />
+			<result property="catalogIntroduction"
+				column="catalog_introduction" />
+			<collection property="catalogOneTwoList"
+				ofType="com.entity.CatalogOneTwo">
+				<id property="num" column="num" />
+				<id property="courseId" column="course_id" />
+				<id property="catalogOneId" column="catalog_one_id" />
+				<id property="catalogTwoId" column="catalog_two_id" />
+				<result property="catalogTwoName" column="catalog_two_name" />
+				<result property="content" column="content" />
+			</collection>
+		</collection>
+
+	</resultMap>
+	<!--检索mysql需要的数据 -->
+	<select id="selectStrCourseInfo" parameterType="String"
+		resultType="java.util.List" resultMap="courseMap">
+		select
+		y_course.course_name ,
+		y_stucourse.course_progress , y_stucourse.teacher_name
+		from
+		y_course ,
+		y_stucourse
+		where
+		y_course.course_id = y_stucourse.course_id and
+		y_stucourse.student_id = #{userId}
+	</select>
+	<!-- 检索全部课程 -->
+	<select id="selectAllCourse" resultMap="courseMap">
+		select
+		*
+		from
+		y_course
+	</select>
+	<!-- 分类查询课程 -->
+	<select id="selectCourseByFlag" resultMap="courseMap">
+		select
+		*
+		from
+		y_course
+		where
+		flag=#{flag}
+	</select>
+	<!-- 搜索课程 -->
+	<select id="searchCourses" resultMap="courseMap">
+		select
+		*
+		from
+		y_course
+		where
+		course_name like concat('%',#{name},'%')
+	</select>
+	<!--查询课程一级目录 -->
+	<select id="selectCatalogOne" resultMap="courseMap">
+		SELECT
+		*
+		FROM
+		y_course c,
+		y_catalog_one co
+		WHERE
+		c.course_id = co.course_id
+		AND c.course_id =
+		#{courseId}
+		order by co.num
+	</select>
+	<!-- 查询教师课程 -->
+	<select id="selectTeacherCourse" resultMap="courseMap">
+		select
+		*
+		from
+		y_teacourse tc,y_course c
+		where
+		tc.course_id = c.course_id
+		and
+		tc.teacher_id=#{teacherId}
+	</select>
+	<!--添加课程信息 -->
+	<insert id="addCourse" parameterType="com.entity.Course">
+		insert
+		into
+		y_course
+		values(#{courseId},#{courseName},#{courseIntroduction},#{flag})
+	</insert>
+	<!--检索课程信息 -->
+	<select id="selectCourseById" resultMap="courseMap">
+		SELECT
+		*
+		FROM
+		y_course
+		WHERE
+		course_id = #{courseId}
+	</select>
+	<!--查询课程全部目录 -->
+	<select id="selectCatalogAll" resultMap="courseMap">
+		select *
+		from
+		y_catalog_one as co,y_catalog_onetwo ct
+		where co.course_id =
+		ct.course_id
+		and co.catalog_one_id = ct.catalog_one_id
+		and ct.course_id
+		= #{courseId}
+		order by
+		co.num,ct.num
+	</select>
+	<!-- 插入一级目录 -->
+	<insert id="addCatalogOne">
+		insert
+		into
+		y_catalog_one
+		values(#{0},#{1},#{2},#{3},#{4})
+	</insert>
+	<!-- 插入二级目录 -->
+	<insert id="addCatalogTwo">
+		insert
+		into
+		y_catalog_onetwo
+		values(#{0},#{1},#{2},#{3},#{4},#{5})
+	</insert>
+
+</mapper>

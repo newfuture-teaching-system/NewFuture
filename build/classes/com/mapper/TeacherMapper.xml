@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.TeacherMapper">
+	<resultMap type="com.entity.Teacher" id="teacherMap">
+		<id property="teacherId" column="teacher_id" />
+		<result property="teacherName" column="teacher_name" />
+		<result property="teacherSex" column="teacher_sex" />
+		<result property="teacherAge" column="teacher_age" />
+		<association property="teacherCourse"
+			javaType="com.entity.TeacherCourse">
+			<id property="teacherId" column="teacher_id" />
+			<id property="courseId" column="course_id" />
+			<result property="startLessonTime" column="start_lesson_time" />
+		</association>
+
+	</resultMap>
+	<!-- 通过课程id检索教师 -->
+	<select id="selectTeacherByCourseId" resultMap="teacherMap">
+		SELECT
+		*
+		FROM
+		y_teacher t,
+		y_teacourse tc
+		WHERE
+		t.teacher_id = tc.teacher_id
+		AND tc.course_id = #{courseId}
+	</select>
+	<!-- 检索教师信息 -->
+	<select id="selectTeacherInfo" parameterType="String"
+		resultMap="teacherMap">
+		SELECT
+		*
+		FROM
+		y_teacher
+		WHERE
+		teacher_id = #{teacherId}
+	</select>
+
+	<!-- 修改教师信息 -->
+	<update id="updateTeacher" parameterType="com.entity.Teacher">
+		UPDATE y_teacher
+		SET
+		teacher_name = #{teacherName},
+		teacher_sex = #{teacherSex},
+		teacher_age = #{teacherAge}
+		WHERE
+		teacher_id = #{teacherId}
+	</update>
+	<!--添加教师用户 -->
+	<insert id="addTeacher" parameterType="com.entity.User">
+		insert
+		into
+		y_teacher
+		(teacher_id,teacher_name)
+		values(#{userId},#{username})
+	</insert>
+	<!--添加课程信息 -->
+	<insert id="addTeaCourse">
+		insert
+		into
+		y_teacourse
+		(teacher_id,course_id)
+		values(#{0},#{1})
+	</insert>
+	<!-- 通过id检索教师 -->
+	<select id="selectTeacherById" resultMap="teacherMap">
+		select
+		*
+		from
+		y_teacher
+		where
+		teacher_id=#{teacherId}
+	</select>
+</mapper>

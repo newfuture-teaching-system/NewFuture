@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.QuestionMapper">
+	<resultMap type="com.entity.Question" id="questionMap">
+		<id property="studentId" column="student_id" />
+		<id property="teacherId" column="teacher_id" />
+		<id property="courseId" column="course_id" />
+		<id property="questionId" column="question_id" />
+		<result property="question" column="question" />
+		<result property="questionTime" column="question_time" />
+		<result property="answer" column="answer" />
+		<result property="answerTime" column="answer_time" />
+		<result property="questionTitle" column="question_title" />
+		<result property="questionState" column="question_state" />
+		<association property="course"
+			javaType="com.entity.Course">
+			<id property="courseId" column="course_id" />
+			<result property="courseName" column="course_name" />
+			<result property="courseIntroduction"
+				column="course_introduction" />
+		</association>
+		<association property="stuCourse"
+			javaType="com.entity.StuCourse">
+			<id property="studentId" column="student_id" />
+			<id property="courseId" column="course_id" />
+			<result property="signUpTime" column="sign_up_time" />
+			<result property="startTime" column="start_time" />
+			<result property="teacherName" column="teacher_name" />
+			<result property="courseProgress" column="course_progress" />
+		</association>
+		<association property="student"
+			javaType="com.entity.Student">
+			<id property="studentId" column="student_id" />
+			<result property="studentName" column="student_name" />
+			<result property="studentSex" column="student_sex" />
+			<result property="studentAge" column="student_age" />
+		</association>
+		<association property="work" javaType="com.entity.Work">
+			<id property="workId" column="work_id" />
+			<id property="studentId" column="student_id" />
+			<result property="workContent" column="work_content" />
+			<result property="workSubmitTime" column="work_submit_time" />
+			<result property="workCheckTime" column="work_check_time" />
+			<result property="workState" column="work_state" />
+			<result property="workCheckContent"
+				column="work_check_content" />
+		</association>
+		<association property="user" javaType="com.entity.User">
+			<id property="userId" column="user_id" />
+			<result property="username" column="username" />
+			<result property="password" column="password" />
+			<result property="flag" column="flag" />
+		</association>
+	</resultMap>
+
+	<select id="getqueContentInfo" 
+		resultMap="questionMap">
+		select
+		*
+		from
+		y_question as q
+		where
+		q.student_id = #{0} and q.question_id = #{1}
+	</select>
+	<insert id="addQuestion" parameterType="com.entity.Question">
+		insert
+		into
+		y_question 
+		(student_id,teacher_id,course_id,question_title,question,question_state)
+		values(#{studentId},#{teacherId},#{courseId},#{questionTitle},#{question},0)
+	</insert>
+<!-- 	查询课程疑问 -->
+	<select id="selectCourseQues"  resultMap="questionMap">
+		SELECT q.* FROM y_question as q where q.student_id = #{0} and q.course_id = #{1}
+	</select>
+	<!-- 查询疑问 -->
+	<select id="getTeaQuesContentInfo" resultMap="questionMap">
+	SELECT q.* FROM y_question as q where q.student_id = #{0} and q.question_id = #{1}
+	
+	</select>
+<!-- 	答疑解惑 -->
+	<update id="updateStudentQues" parameterType="com.entity.Question">
+	update
+	y_question
+	set
+	answer_time=#{answerTime},
+	question_state=1,
+	answer=#{answer}
+	where
+	question_id=#{questionId}
+	and
+	student_id=#{studentId}
+	
+	</update>
+
+</mapper>

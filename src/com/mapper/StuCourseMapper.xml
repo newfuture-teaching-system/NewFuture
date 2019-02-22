@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.StuCourseMapper">
+	<resultMap type="com.entity.StuCourse" id="stuCourseMap">
+		<id property="studentId" column="student_id" />
+		<id property="courseId" column="course_id" />
+		<result property="signUpTime" column="sign_up_time" />
+		<result property="startTime" column="start_time" />
+		<result property="teacherName" column="teacher_name" />
+		<result property="courseProgress" column="course_progress" />
+	</resultMap>
+<!-- 	通过id查询课程 -->
+<select id="selectStuCourseById" resultMap="stuCourseMap">
+select
+*
+from
+y_stucourse sc
+where
+sc.course_id=#{0}
+and sc.student_id=#{1}
+</select>
+<!-- 查询学生课程进度 -->
+	<select id="selectProgress" 
+		resultMap="stuCourseMap">
+		select
+		sc.course_progress
+		from
+		y_stucourse sc
+		where
+		sc.course_id
+		= #{0}
+		and sc.student_id = #{1}
+	</select>
+</mapper>

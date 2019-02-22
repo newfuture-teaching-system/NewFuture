@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.WorkMapper">
+	<resultMap type="com.entity.Work" id="workMap">
+		<id property="id" column="id" />
+		<id property="workId" column="work_id" />
+		<id property="studentId" column="student_id" />
+		<result property="workContent" column="work_content" />
+		<result property="workSubmitTime" column="work_submit_time" />
+		<result property="workCheckTime" column="work_check_time" />
+		<result property="workState" column="work_state" />
+		<result property="workCheckContent" column="work_check_content" />
+		<association property="course"
+			javaType="com.entity.Course">
+			<id property="courseId" column="course_id" />
+			<result property="courseName" column="course_name" />
+			<result property="courseIntroduction"
+				column="course_introduction" />
+		</association>
+		<association property="stuCourse"
+			javaType="com.entity.StuCourse">
+			<id property="studentId" column="student_id" />
+			<id property="courseId" column="course_id" />
+			<result property="signUpTime" column="sign_up_time" />
+			<result property="startTime" column="start_time" />
+			<result property="teacherName" column="teacher_name" />
+			<result property="courseProgress" column="course_progress" />
+		</association>
+		<association property="student"
+			javaType="com.entity.Student">
+			<id property="studentId" column="student_id" />
+			<result property="studentName" column="student_name" />
+			<result property="studentSex" column="student_sex" />
+			<result property="studentAge" column="student_age" />
+		</association>
+
+		<association property="user" javaType="com.entity.User">
+			<id property="userId" column="user_id" />
+			<result property="username" column="username" />
+			<result property="password" column="password" />
+			<result property="flag" column="flag" />
+		</association>
+		<association property="workOneTwo"
+			javaType="com.entity.WorkOneTwo">
+			<id property="workId" column="work_id" />
+			<id property="courseId" column="course_id" />
+			<id property="catalogOneId" column="catalog_one_id" />
+			<id property="catalogTwoId" column="catalog_two_id" />
+			<result property="work" column="work" />
+		</association>
+
+	</resultMap>
+	<select id="workContentInfo" parameterType="String"
+		resultMap="workMap">
+		<!-- select
+		c.course_name,sc.teacher_name,w.work_submit_time,w.work_state,w.work_content,w.work_check_content,w.work_id
+		from
+		y_course as c,
+		y_student as s,
+		y_stucourse as sc,
+		y_work as w,
+		y_work_onetwo as wot
+		where
+		sc.student_id = s.student_id and
+		sc.course_id =
+		wot.course_id and
+		s.student_id = #{0} and
+		wot.course_id = #{1} and
+		w.work_id = #{2} -->
+		select
+		*
+		from
+		y_work
+		where
+		student_id=#{0}
+		and
+		work_id=#{2}
+	</select>
+	<!-- 查询学生课程作业列表 -->
+	<select id="selectCourseWork" resultMap="workMap">
+		SELECT w.* FROM
+		y_work as w,
+		y_work_onetwo as wot
+		WHERE
+		w.work_id = wot.work_id
+		and
+		wot.course_id = #{0} 
+		AND
+		w.student_id = #{1};
+
+	</select>
+	<!-- 查询学生课程作业 -->
+	<select id="selectStudentWork" resultMap="workMap">
+		select
+		*
+		from
+		y_work
+		where
+		student_id=#{0}
+		and
+		work_id=#{1}
+	</select>
+	<!-- 批改作业 -->
+	<update id="updateStudentWork" parameterType="com.entity.Work">
+		update
+		y_work
+		set
+		work_check_time=#{workCheckTime},
+		work_state = 1,
+		work_check_content=#{workCheckContent}
+		where
+		work_id=#{workId}
+		and
+		student_id=#{studentId}
+
+	</update>
+	<!-- 提交作业截图 -->
+	<insert id="saveWork">
+		insert into
+		y_work(id,work_id,student_id,work_content,work_state)
+		values(null,#{2},#{0},#{1},0)
+	</insert>
+</mapper>
